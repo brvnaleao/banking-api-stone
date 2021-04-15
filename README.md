@@ -91,7 +91,7 @@ Create an User and Account
 
 
 
-## 2. ithdrawn
+## 2. Withdrawn
 
 Create an User and Account
 
@@ -207,7 +207,7 @@ or
 
 **Code** : `404 BAD REQUEST`
 
-```
+```json
 {
   "description": "Account not found",
   "type": "not_found"
