@@ -51,7 +51,7 @@ Create an User and Account
 
 ### Success Response
 
-**Condition** : If everything is OK and an Account didn't exist for this User.
+**Condition** : If everything all inputs are valid and there is no duplication.
 
 **Code** : `201 CREATED`
 
@@ -105,7 +105,7 @@ Create an User and Account
 
 ### Success Response
 
-**Condition** : If everything is OK and an Account didn't exist for this User.
+**Condition** : If the account and the the value are valid.
 
 **Code** : `201 CREATED`
 
@@ -140,7 +140,6 @@ or
 ```
 
 
-
 ## 3. Transfer funds between accounts
 
 Create an User and Account
@@ -150,7 +149,7 @@ Create an User and Account
 **Method** : `POST`
 
 
- All fields are required and the value must be in cents.
+ All fields are required and the value must be sent in cents.
 
 ```json
 {
@@ -163,7 +162,7 @@ Create an User and Account
 
 ### Success Response
 
-**Condition** : If everything is OK and an Account didn't exist for this User.
+**Condition** : If the accounts and the value are valid.
 
 **Code** : `201 CREATED`
 
@@ -220,7 +219,7 @@ Recovers current account balance
 
 ### Success Response
 
-**Condition** : If everything is OK and an Account didn't exist for this User.
+**Condition** : If the account is correct.
 
 **Code** : `200 OK`
 
@@ -245,21 +244,11 @@ Recovers current account balance
 }
 ```
 
-or 
 
-```json
-{
-  "description": "Invalid Id",
-  "type": "bad_input"
-}
-
-```
-
-or 
 
 **Code** : `404 BAD REQUEST`
 
-```
+```json
 {
   "description": "Account not found",
   "type": "not_found"
