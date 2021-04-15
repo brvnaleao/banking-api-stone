@@ -10,45 +10,42 @@ defmodule BankingApiWeb.AccountControllerTest do
 
   describe "GET /api/account/:id" do
     test "return a successs status", ctx do
-
-      user = Repo.insert!(%User{
-        name: "name",
-        email: "#{Ecto.UUID.generate()}@email.com",
-        cpf:
-          Ecto.UUID.generate()
-          |> String.slice(0..10)
-      })
-
-      account = Repo.insert!(%Account{
-        user_id: user.id
+      user =
+        Repo.insert!(%User{
+          name: "name",
+          email: "#{Ecto.UUID.generate()}@email.com",
+          cpf:
+            Ecto.UUID.generate()
+            |> String.slice(0..10)
         })
 
-        assert %{"description" => description} =
+      account =
+        Repo.insert!(%Account{
+          user_id: user.id
+        })
 
-       ctx.conn
-             |> get("/api/account/#{account.id}")
-             |> json_response(200)
+      assert %{"description" => description} =
+               ctx.conn
+               |> get("/api/account/#{account.id}")
+               |> json_response(200)
     end
-
   end
-
-
 
   describe "post /account/withdraw" do
     test "return a successs status", ctx do
-
-      user = Repo.insert!(%User{
-        name: "name",
-        email: "#{Ecto.UUID.generate()}@email.com",
-        cpf:
-          Ecto.UUID.generate()
-          |> String.slice(0..10)
-      })
-
-      account = Repo.insert!(%Account{
-        user_id: user.id
+      user =
+        Repo.insert!(%User{
+          name: "name",
+          email: "#{Ecto.UUID.generate()}@email.com",
+          cpf:
+            Ecto.UUID.generate()
+            |> String.slice(0..10)
         })
 
+      account =
+        Repo.insert!(%Account{
+          user_id: user.id
+        })
 
       input = %{
         "id" => account.id,
@@ -61,24 +58,10 @@ defmodule BankingApiWeb.AccountControllerTest do
     end
   end
 
-
   describe "post /account/transfer" do
     test "return a successs status", ctx do
-
-      user = Repo.insert!(%User{
-        name: "name",
-        email: "#{Ecto.UUID.generate()}@email.com",
-        cpf:
-          Ecto.UUID.generate()
-          |> String.slice(0..10)
-      })
-
-      account = Repo.insert!(%Account{
-        user_id: user.id
-        })
-
-
-        second_user = Repo.insert!(%User{
+      user =
+        Repo.insert!(%User{
           name: "name",
           email: "#{Ecto.UUID.generate()}@email.com",
           cpf:
@@ -86,11 +69,24 @@ defmodule BankingApiWeb.AccountControllerTest do
             |> String.slice(0..10)
         })
 
-        second_account = Repo.insert!(%Account{
+      account =
+        Repo.insert!(%Account{
           user_id: user.id
-          })
+        })
 
+      second_user =
+        Repo.insert!(%User{
+          name: "name",
+          email: "#{Ecto.UUID.generate()}@email.com",
+          cpf:
+            Ecto.UUID.generate()
+            |> String.slice(0..10)
+        })
 
+      second_account =
+        Repo.insert!(%Account{
+          user_id: user.id
+        })
 
       input = %{
         "origin" => account.id,

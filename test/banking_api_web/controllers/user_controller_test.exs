@@ -18,7 +18,5 @@ defmodule BankingApiWeb.UserControllerTest do
              |> post("/api/users", input)
              |> json_response(201)
     end
-
-
   end
 end

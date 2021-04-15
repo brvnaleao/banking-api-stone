@@ -5,7 +5,7 @@ defmodule BankingApi.Accounts.Schemas.Transaction do
 
   @derive {Jason.Encoder, except: [:__meta__]}
 
-  @fields [:balance]
+  @fields [:value]
 
   @primary_key {:id, :binary_id, autogenerate: true}
   @foreign_key_type :binary_id
@@ -21,5 +21,6 @@ defmodule BankingApi.Accounts.Schemas.Transaction do
     model
     |> cast(params, @fields)
     |> validate_required(@fields)
+    |> cast_assoc(:account)
   end
 end

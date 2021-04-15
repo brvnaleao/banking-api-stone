@@ -2,6 +2,7 @@ defmodule BankingApi.Accounts.Schemas.Account do
   use Ecto.Schema
   import Ecto.Changeset
   alias BankingApi.Users.Schemas.User
+
   @derive {Jason.Encoder, except: [:__meta__]}
 
   @fields [:balance]

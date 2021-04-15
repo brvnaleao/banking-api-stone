@@ -10,15 +10,17 @@ defmodule BankingApi.Accounts do
 
   def update_balance(changeset) do
     query = from(a in Account, where: a.id == ^changeset.id, lock: "FOR UPDATE")
+    IO.inspect(query)
 
-    [account | _] = Repo.all(query)
+    result = Repo.all(query)
 
-    if(account !== nil) do
+    if(result !== nil and result !== []) do
+      [account | _] = result
       withdraw = changeset.withdraw
       new_value = account.balance - withdraw
 
       with {:ok, struct} <- update_values(account, new_value),
-           {:ok, _} <- save_transaction(withdraw, account.id, true) do
+           {:ok, _} <- save_transaction(-withdraw, account.id, true) do
         {:ok, struct}
       else
         {:error, error} -> {:error, error}
@@ -57,17 +59,22 @@ defmodule BankingApi.Accounts do
     first_query = from(a in Account, where: a.id == ^changeset.origin, lock: "FOR UPDATE")
     second_query = from(a in Account, where: a.id == ^changeset.destiny, lock: "FOR UPDATE")
 
-    [origin_account | _] = Repo.all(first_query)
-    [destiny_account | _] = Repo.all(second_query)
+    result_first_query = Repo.all(first_query)
+    result_second_query = Repo.all(second_query)
 
-    if(origin_account == nil or destiny_account == nil) do
-      IO.inspect(origin_account)
-      IO.inspect(destiny_account)
-
+    if(
+      result_first_query == nil or
+        result_second_query == nil or
+        result_second_query == [] or
+        result_first_query == []
+    ) do
       {:error, :invalid_accounts}
     else
       Repo.transaction(fn ->
         value = changeset.value
+
+        [origin_account | _] = result_first_query
+        [destiny_account | _] = result_second_query
 
         new_value_origin = origin_account.balance - value
         new_value_destiny = destiny_account.balance + value

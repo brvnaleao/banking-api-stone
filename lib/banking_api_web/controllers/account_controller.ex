@@ -5,7 +5,7 @@ defmodule BankingApiWeb.AccountController do
   def show(conn, %{"id" => account_id}) do
     with {:uuid, {:ok, _}} <- {:uuid, Ecto.UUID.cast(account_id)},
          {:ok, value} <- Accounts.fetch(account_id) do
-      send_json(conn, 200, %{description: "Your acctual balance is #{value}"})
+      send_json(conn, 200, %{description: "Your actual balance is #{value}"})
     else
       {:uuid, :error} ->
         send_json(conn, 400, %{type: "bad_input", description: "Invalid Id"})
