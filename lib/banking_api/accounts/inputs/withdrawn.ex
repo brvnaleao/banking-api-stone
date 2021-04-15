@@ -1,4 +1,4 @@
-defmodule BankingApi.Accounts.Inputs.withdrawn do
+defmodule BankingApi.Accounts.Inputs.Withdrawn do
   @moduledoc """
   Input data for calling insert_new_author/1.
   """
