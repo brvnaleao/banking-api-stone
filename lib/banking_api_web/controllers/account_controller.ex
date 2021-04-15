@@ -15,9 +15,9 @@ defmodule BankingApiWeb.AccountController do
     end
   end
 
-  def withdrawal(conn, %{"id" => account_id} = params) when is_map(params) do
+  def withdrawn(conn, %{"id" => account_id} = params) when is_map(params) do
     with {:uuid, {:ok, _}} <- {:uuid, Ecto.UUID.cast(account_id)},
-         {:ok, struct} <- Accounts.withdrawal(params) do
+         {:ok, struct} <- Accounts.withdrawn(params) do
       render_json(conn, struct, "update_balance.json")
     else
       {:uuid, :error} ->

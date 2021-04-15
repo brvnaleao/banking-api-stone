@@ -1,4 +1,4 @@
-defmodule BankingApi.Accounts.Inputs.Withdrawal do
+defmodule BankingApi.Accounts.Inputs.withdrawn do
   @moduledoc """
   Input data for calling insert_new_author/1.
   """
@@ -6,19 +6,19 @@ defmodule BankingApi.Accounts.Inputs.Withdrawal do
 
   import Ecto.Changeset
 
-  @required [:id, :withdrawal]
+  @required [:id, :withdrawn]
   @optional []
 
   @primary_key false
   embedded_schema do
     field :id, :string
-    field :withdrawal, :integer
+    field :withdrawn, :integer
   end
 
   def changeset(model \\ %__MODULE__{}, params) do
     model
     |> cast(params, @required ++ @optional)
     |> validate_required(@required)
-    |> validate_number(:withdrawal, greater_than: 0)
+    |> validate_number(:withdrawn, greater_than: 0)
   end
 end
