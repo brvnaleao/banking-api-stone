@@ -1,4 +1,4 @@
-defmodule BankingApi.Accounts.Inputs.Transference do
+defmodule BankingApi.Accounts.Inputs.Transfer do
   @moduledoc """
   Input data for calling insert_new_author/1.
   """

@@ -1,7 +1,7 @@
 defmodule BankingApi.Accounts do
   alias BankingApi.Accounts.Schemas.Account
   alias BankingApi.Accounts.Schemas.Transaction
-  alias BankingApi.Accounts.Inputs.Transference
+  alias BankingApi.Accounts.Inputs.Transfer
   alias BankingApi.Accounts.Inputs.Withdrawal
 
   alias BankingApi.Repo
@@ -10,7 +10,6 @@ defmodule BankingApi.Accounts do
 
   def update_balance(changeset) do
     query = from(a in Account, where: a.id == ^changeset.id, lock: "FOR UPDATE")
-    IO.inspect(query)
 
     result = Repo.all(query)
 
@@ -55,7 +54,7 @@ defmodule BankingApi.Accounts do
     |> module.changeset()
   end
 
-  def create_transference(changeset) do
+  def create_transfer(changeset) do
     first_query = from(a in Account, where: a.id == ^changeset.origin, lock: "FOR UPDATE")
     second_query = from(a in Account, where: a.id == ^changeset.destiny, lock: "FOR UPDATE")
 
@@ -92,9 +91,9 @@ defmodule BankingApi.Accounts do
     end
   end
 
-  def transference_between_accounts(params) do
-    with %{valid?: true} = changeset <- validate_inputs(params, Transference),
-         {:ok, struct} <- create_transference(changeset.changes) do
+  def transfer_between_accounts(params) do
+    with %{valid?: true} = changeset <- validate_inputs(params, Transfer),
+         {:ok, struct} <- create_transfer(changeset.changes) do
       {:ok, struct}
     else
       %{valid?: false} = changeset ->

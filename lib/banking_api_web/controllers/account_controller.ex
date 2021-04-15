@@ -44,7 +44,7 @@ defmodule BankingApiWeb.AccountController do
       when is_map(params) do
     with {:uuid, {:ok, _}} <- {:uuid, Ecto.UUID.cast(origin)},
          {:uuid, {:ok, _}} <- {:uuid, Ecto.UUID.cast(destiny)},
-         {:ok, struct} <- Accounts.transference_between_accounts(params) do
+         {:ok, struct} <- Accounts.transfer_between_accounts(params) do
       render_json(conn, struct, "transfer_balance.json")
     else
       {:uuid, :error} ->

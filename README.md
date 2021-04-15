@@ -83,11 +83,11 @@ Create an User and Account
 
 
 
-## 2. Withdrawal
+## 2. ithdrawn
 
 Create an User and Account
 
-**URL** : `/api/account/withdrawal`
+**URL** : `/api/account/withdrawn`
 
 **Method** : `POST`
 
@@ -97,7 +97,7 @@ Create an User and Account
 ```json
 {
 	"id": "[Valid UUID. Ex: 5cd5e558-a8e3-4f5f-9695-758eb5604b0b]",
-	"withdrawal": "[integer value]"
+	"withdrawn": "[integer value]"
 }
 ```
 
@@ -125,7 +125,7 @@ Create an User and Account
 
 ```json
 {
-  "withdrawal": "can't be blank"
+  "withdrawn": "can't be blank"
 }
 ```
 
@@ -182,7 +182,7 @@ Create an User and Account
 
 ```json
 {
-  "withdrawal": "can't be blank"
+  "withdrawn": "can't be blank"
 }
 ```
 
