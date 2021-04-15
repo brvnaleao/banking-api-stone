@@ -16,7 +16,7 @@ defmodule BankingApi.Accounts.Inputs.Withdrawn do
 
   def changeset(model \\ %__MODULE__{}, params) do
     model
-    |> cast(params, @required ++ @optional)
+    |> cast(params, @required)
     |> validate_required(@required)
     |> validate_number(:withdrawn, greater_than: 0)
   end
