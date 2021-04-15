@@ -2,7 +2,7 @@ defmodule BankingApi.Accounts do
   alias BankingApi.Accounts.Schemas.Account
   alias BankingApi.Accounts.Schemas.Transaction
   alias BankingApi.Accounts.Inputs.Transference
-  alias BankingApi.Accounts.Inputs.Withdraw
+  alias BankingApi.Accounts.Inputs.Withdrawal
 
   alias BankingApi.Repo
 
@@ -16,11 +16,11 @@ defmodule BankingApi.Accounts do
 
     if(result !== nil and result !== []) do
       [account | _] = result
-      withdraw = changeset.withdraw
-      new_value = account.balance - withdraw
+      withdrawal = changeset.withdrawal
+      new_value = account.balance - withdrawal
 
       with {:ok, struct} <- update_values(account, new_value),
-           {:ok, _} <- save_transaction(-withdraw, account.id, true) do
+           {:ok, _} <- save_transaction(-withdrawal, account.id, true) do
         {:ok, struct}
       else
         {:error, error} -> {:error, error}
@@ -105,8 +105,8 @@ defmodule BankingApi.Accounts do
     end
   end
 
-  def withdraw(params) do
-    with %{valid?: true} = changeset <- validate_inputs(params, Withdraw),
+  def withdrawal(params) do
+    with %{valid?: true} = changeset <- validate_inputs(params, Withdrawal),
          {:ok, struct} <- update_balance(changeset.changes) do
       {:ok, struct}
     else

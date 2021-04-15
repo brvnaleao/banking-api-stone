@@ -31,7 +31,7 @@ defmodule BankingApiWeb.AccountControllerTest do
     end
   end
 
-  describe "post /account/withdraw" do
+  describe "post /account/withdrawal" do
     test "return a successs status", ctx do
       user =
         Repo.insert!(%User{
@@ -49,11 +49,11 @@ defmodule BankingApiWeb.AccountControllerTest do
 
       input = %{
         "id" => account.id,
-        "withdraw" => "100"
+        "withdrawal" => "100"
       }
 
       assert ctx.conn
-             |> post("/api/account/withdraw", input)
+             |> post("/api/account/withdrawal", input)
              |> json_response(201)
     end
   end
