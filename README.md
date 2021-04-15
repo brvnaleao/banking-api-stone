@@ -10,6 +10,14 @@ To run the project you need first to have a Postgres container running on port 5
 docker-compose up -d
 ```
 
+
+To config the database: 
+
+``` sh
+# On the root folder
+mix setup
+```
+
 To run tests: 
 
 ``` sh
