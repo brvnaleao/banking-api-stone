@@ -127,7 +127,8 @@ defmodule BankingApi.Accounts do
     case balance do
       nil ->
         {:error, :not_found}
-
+      [] ->
+        {:error, :not_found}
       [value | _] ->
         money = Money.new(value, :USD)
         {:ok, Money.to_string(money)}
