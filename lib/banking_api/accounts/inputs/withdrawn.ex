@@ -7,7 +7,6 @@ defmodule BankingApi.Accounts.Inputs.Withdrawn do
   import Ecto.Changeset
 
   @required [:id, :withdrawn]
-  @optional []
 
   @primary_key false
   embedded_schema do
