@@ -4,7 +4,7 @@ defmodule BankingApi.Accounts do
   """
 
   alias BankingApi.Accounts.Inputs.Transfer
-  alias BankingApi.Accounts.Inputs.Withdrawn
+  alias BankingApi.Accounts.Inputs.Withdrawal
   alias BankingApi.Accounts.Schemas.Account
   alias BankingApi.Accounts.Schemas.Transaction
 
@@ -16,20 +16,16 @@ defmodule BankingApi.Accounts do
     Repo.transaction(fn ->
       query = from(a in Account, where: a.id == ^arguments.id, lock: "FOR UPDATE")
 
-      account = Repo.one(query)
-
-      if account !== nil do
-        withdrawn = arguments.withdrawn
-        new_value = account.balance - withdrawn
-
-        with {:ok, struct} <- update_values(account, new_value),
-             {:ok, _} <- save_transaction(-withdrawn, account.id, true) do
-          struct
-        else
-          {:error, error} -> Repo.rollback(error)
-        end
+      with %Account{} = account <- Repo.one(query),
+           {:ok, struct} <- update_values(account, account.balance - arguments.withdrawal),
+           {:ok, _} <- save_transaction(-arguments.withdrawal, account.id, true) do
+        struct
       else
-        Repo.rollback(:invalid_account)
+        nil ->
+          Repo.rollback(:invalid_account)
+
+        {:error, reason} ->
+          Repo.rollback(reason)
       end
     end)
   end
@@ -51,7 +47,7 @@ defmodule BankingApi.Accounts do
     })
   end
 
-  defp update_values(_changeset, value) when value <= 0, do: {:error, :balance_error}
+  defp update_values(_changeset, value) when value < 0, do: {:error, :balance_error}
 
   defp update_values(changeset, new_value) do
     changeset
@@ -99,17 +95,17 @@ defmodule BankingApi.Accounts do
   end
 
   def transfer_between_accounts(params) do
-    with {:ok, struct} <- validate_inputs(params, Transfer),
-         {:ok, struct} <- create_transfer(struct) do
-      {:ok, struct}
+    with {:ok, input} <- validate_inputs(params, Transfer),
+         {:ok, transfer} <- create_transfer(input) do
+      {:ok, transfer}
     else
       {:error, error} ->
         {:error, error}
     end
   end
 
-  def withdrawn(params) do
-    with {:ok, struct} <- validate_inputs(params, Withdrawn),
+  def withdraw(params) do
+    with {:ok, struct} <- validate_inputs(params, Withdrawal),
          {:ok, struct} <- update_balance(struct) do
       {:ok, struct}
     else
@@ -119,16 +115,15 @@ defmodule BankingApi.Accounts do
   end
 
   def fetch(account_id) do
-    query = from(a in Account, where: a.id == ^account_id, select: a.balance)
-    balance = Repo.one(query)
-
-    case balance do
+    from(a in Account, where: a.id == ^account_id, select: a.balance)
+    |> Repo.one()
+    |> case do
       nil ->
         {:error, :not_found}
 
       value ->
-        money = Money.new(value, :USD)
-        {:ok, Money.to_string(money)}
+        value_string = value |> Money.new(:USD) |> Money.to_string()
+        {:ok, value_string}
     end
   end
 end

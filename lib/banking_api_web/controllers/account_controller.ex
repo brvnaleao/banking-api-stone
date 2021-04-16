@@ -15,16 +15,17 @@ defmodule BankingApiWeb.AccountController do
     end
   end
 
-  @spec withdrawn(Plug.Conn.t(), map) :: Plug.Conn.t()
-  def withdrawn(conn, params) when is_map(params) do
+  def withdraw(conn, params) when is_map(params) do
+    case Accounts.withdraw(params) do
+      {:ok, struct} ->
+        render_json(conn, struct, "update_balance.json")
 
-    case Accounts.withdrawn(params) do
-      {:ok, struct} -> render_json(conn, struct, "update_balance.json")
       {:error, :balance_error} ->
         send_json(conn, 400, %{
           type: "negative_value",
           description: "Your balance cannot be negative"
         })
+
       {:error, :invalid_account} ->
         send_json(conn, 404, %{type: "not_found", description: "Account not found"})
 
@@ -40,10 +41,10 @@ defmodule BankingApiWeb.AccountController do
     }
   end
 
-  def tranfer_between_accounts(conn, params)
-      when is_map(params) do
+  def tranfer_between_accounts(conn, params) when is_map(params) do
     case Accounts.transfer_between_accounts(params) do
-      {:ok, struct} -> render_json(conn, struct, "transfer_balance.json")
+      {:ok, struct} ->
+        render_json(conn, struct, "transfer_balance.json")
 
       {:error, :balance_error} ->
         send_json(conn, 400, %{

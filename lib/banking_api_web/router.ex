@@ -11,7 +11,7 @@ defmodule BankingApiWeb.Router do
     get "/account/:id", AccountController, :show
     # get "/accounts", AccountController, :list
 
-    post "/account/withdrawn", AccountController, :withdrawn
+    post "/account/withdrawal", AccountController, :withdraw
     post "/account/transfer", AccountController, :tranfer_between_accounts
     post "/users", UserController, :create
   end
