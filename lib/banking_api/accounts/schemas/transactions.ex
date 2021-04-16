@@ -12,6 +12,7 @@ defmodule BankingApi.Accounts.Schemas.Transaction do
   schema "transactions" do
     field :value, :integer
     field :external, :boolean, default: false
+    field :transaction_id, Ecto.UUID
     belongs_to :account, Account
 
     timestamps(updated_at: false)

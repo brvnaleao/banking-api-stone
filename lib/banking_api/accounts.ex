@@ -38,6 +38,15 @@ defmodule BankingApi.Accounts do
     })
   end
 
+  defp save_transaction(value, account_id, external_or_not, transaction_id) do
+    Repo.insert(%Transaction{
+      value: value,
+      account_id: account_id,
+      external: external_or_not,
+      transaction_id: transaction_id
+    })
+  end
+
   defp update_values(_changeset, value) when value <= 0, do: {:error, :balance_error}
 
   defp update_values(changeset, new_value) do
@@ -70,14 +79,15 @@ defmodule BankingApi.Accounts do
         Repo.rollback(:invalid_accounts)
       else
         value = changeset.value
+        transaction_id = Ecto.UUID.generate()
 
         new_value_origin = origin_account.balance - value
         new_value_destiny = destiny_account.balance + value
 
         with {:ok, struct} <- update_values(origin_account, new_value_origin),
              {:ok, _} <- update_values(destiny_account, new_value_destiny),
-             {:ok, _} <- save_transaction(-value, origin_account.id, false),
-             {:ok, _} <- save_transaction(value, destiny_account.id, false) do
+             {:ok, _} <- save_transaction(-value, origin_account.id, false, transaction_id),
+             {:ok, _} <- save_transaction(value, destiny_account.id, false, transaction_id) do
           struct
         else
           {:error, error} ->
