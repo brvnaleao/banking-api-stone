@@ -315,5 +315,7 @@ Column | Type | Mandatory
 id  | uuid | X
 external  | boolean | X
 value | integer | X
+transaction_id | uuid | 
 account_id  | timestampv | X
 inserted_at  | timestamp | X
+
