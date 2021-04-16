@@ -15,14 +15,10 @@ defmodule BankingApiWeb.AccountController do
     end
   end
 
-  def withdrawn(conn, %{"id" => account_id} = params) when is_map(params) do
-    with {:uuid, {:ok, _}} <- {:uuid, Ecto.UUID.cast(account_id)},
-         {:ok, struct} <- Accounts.withdrawn(params) do
+  def withdrawn(conn, params) when is_map(params) do
+    with {:ok, struct} <- Accounts.withdrawn(params) do
       render_json(conn, struct, "update_balance.json")
     else
-      {:uuid, :error} ->
-        send_json(conn, 400, %{type: "bad_input", description: "Invalid Id"})
-
       {:error, :balance_error} ->
         send_json(conn, 400, %{
           type: "negative_value",
@@ -32,24 +28,23 @@ defmodule BankingApiWeb.AccountController do
       {:error, :invalid_account} ->
         send_json(conn, 404, %{type: "not_found", description: "Account not found"})
 
-      {:error, changeset} ->
-        send_json(conn, 400, transform_into_map(changeset.errors))
+      {:error, %Ecto.Changeset{errors: errors}} ->
+        send_json(conn, 400, get_error_template(errors))
     end
   end
 
-  def tranfer_between_accounts(
-        conn,
-        %{"origin" => origin, "destiny" => destiny} = params
-      )
+  defp get_error_template(errors) do
+    %{
+      type: "bad_input",
+      description: transform_into_map(errors)
+    }
+  end
+
+  def tranfer_between_accounts(conn, params)
       when is_map(params) do
-    with {:uuid, {:ok, _}} <- {:uuid, Ecto.UUID.cast(origin)},
-         {:uuid, {:ok, _}} <- {:uuid, Ecto.UUID.cast(destiny)},
-         {:ok, struct} <- Accounts.transfer_between_accounts(params) do
+    with {:ok, struct} <- Accounts.transfer_between_accounts(params) do
       render_json(conn, struct, "transfer_balance.json")
     else
-      {:uuid, :error} ->
-        send_json(conn, 400, %{type: "bad_input", description: "Invalid Id"})
-
       {:error, :balance_error} ->
         send_json(conn, 400, %{
           type: "negative_value",
@@ -63,13 +58,7 @@ defmodule BankingApiWeb.AccountController do
         send_json(conn, 404, %{type: "wrong_input", description: "You sent a invalid value"})
 
       {:error, %Ecto.Changeset{errors: errors}} ->
-        msg = %{
-          type: "bad_input",
-          description: "Invalid input",
-          details: transform_into_map(errors)
-        }
-
-        send_json(conn, 400, msg)
+        send_json(conn, 400, get_error_template(errors))
     end
   end
 

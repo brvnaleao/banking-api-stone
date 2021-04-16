@@ -10,7 +10,7 @@ defmodule BankingApi.Accounts.Inputs.Withdrawn do
 
   @primary_key false
   embedded_schema do
-    field :id, :string
+    field :id, Ecto.UUID
     field :withdrawn, :integer
   end
 

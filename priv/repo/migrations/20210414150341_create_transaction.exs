@@ -8,7 +8,7 @@ defmodule BankingApi.Repo.Migrations.CreateTransaction do
       add :value, :integer, null: false
       add :account_id, references(:accounts, type: :uuid), null: false
 
-      timestamps()
+      timestamps(updated_at: false)
     end
   end
 end

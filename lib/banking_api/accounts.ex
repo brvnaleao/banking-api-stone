@@ -8,28 +8,29 @@ defmodule BankingApi.Accounts do
 
   import Ecto.Query, only: [from: 2]
 
-  def update_balance(changeset) do
-    query = from(a in Account, where: a.id == ^changeset.id, lock: "FOR UPDATE")
+  defp update_balance(arguments) do
+    Repo.transaction(fn ->
+      query = from(a in Account, where: a.id == ^arguments.id, lock: "FOR UPDATE")
 
-    result = Repo.all(query)
+      account = Repo.one(query)
 
-    if(result !== nil and result !== []) do
-      [account | _] = result
-      withdrawn = changeset.withdrawn
-      new_value = account.balance - withdrawn
+      if(account !== nil) do
+        withdrawn = arguments.withdrawn
+        new_value = account.balance - withdrawn
 
-      with {:ok, struct} <- update_values(account, new_value),
-           {:ok, _} <- save_transaction(-withdrawn, account.id, true) do
-        {:ok, struct}
+        with {:ok, struct} <- update_values(account, new_value),
+             {:ok, _} <- save_transaction(-withdrawn, account.id, true) do
+          struct
+        else
+          {:error, error} -> Repo.rollback(error)
+        end
       else
-        {:error, error} -> {:error, error}
+        Repo.rollback(:invalid_account)
       end
-    else
-      {:error, :invalid_account}
-    end
+    end)
   end
 
-  def save_transaction(value, account_id, external_or_not) do
+  defp save_transaction(value, account_id, external_or_not) do
     Repo.insert(%Transaction{
       value: value,
       account_id: account_id,
@@ -37,43 +38,38 @@ defmodule BankingApi.Accounts do
     })
   end
 
-  defp update_values(changeset, new_value) do
-    cond do
-      new_value <= 0 ->
-        {:error, :balance_error}
+  defp update_values(_changeset, value) when value <= 0, do: {:error, :balance_error}
 
-      true ->
-        changeset
-        |> Ecto.Changeset.change(balance: new_value)
-        |> Repo.update()
+  defp update_values(changeset, new_value) do
+    changeset
+    |> Ecto.Changeset.change(balance: new_value)
+    |> Repo.update()
+  end
+
+  defp validate_inputs(params, module) do
+    params
+    |> module.changeset()
+    |> case do
+      %{valid?: true} = changeset -> {:ok, Ecto.Changeset.apply_changes(changeset)}
+      changeset -> {:error, changeset}
     end
   end
 
-  def validate_inputs(params, module) do
-    params
-    |> module.changeset()
-  end
+  defp create_transfer(changeset) do
+    Repo.transaction(fn ->
+      first_query = from(a in Account, where: a.id == ^changeset.origin, lock: "FOR UPDATE")
+      second_query = from(a in Account, where: a.id == ^changeset.destiny, lock: "FOR UPDATE")
 
-  def create_transfer(changeset) do
-    first_query = from(a in Account, where: a.id == ^changeset.origin, lock: "FOR UPDATE")
-    second_query = from(a in Account, where: a.id == ^changeset.destiny, lock: "FOR UPDATE")
+      origin_account = Repo.one(first_query)
+      destiny_account = Repo.one(second_query)
 
-    result_first_query = Repo.all(first_query)
-    result_second_query = Repo.all(second_query)
-
-    if(
-      result_first_query == nil or
-        result_second_query == nil or
-        result_second_query == [] or
-        result_first_query == []
-    ) do
-      {:error, :invalid_accounts}
-    else
-      Repo.transaction(fn ->
+      if(
+        origin_account == nil or
+          destiny_account == nil
+      ) do
+        Repo.rollback(:invalid_accounts)
+      else
         value = changeset.value
-
-        [origin_account | _] = result_first_query
-        [destiny_account | _] = result_second_query
 
         new_value_origin = origin_account.balance - value
         new_value_destiny = destiny_account.balance + value
@@ -87,48 +83,39 @@ defmodule BankingApi.Accounts do
           {:error, error} ->
             Repo.rollback(error)
         end
-      end)
-    end
+      end
+    end)
   end
 
   def transfer_between_accounts(params) do
-    with %{valid?: true} = changeset <- validate_inputs(params, Transfer),
-         {:ok, struct} <- create_transfer(changeset.changes) do
+    with {:ok, struct} <- validate_inputs(params, Transfer),
+         {:ok, struct} <- create_transfer(struct) do
       {:ok, struct}
     else
-      %{valid?: false} = changeset ->
-        {:error, changeset}
-
       {:error, error} ->
         {:error, error}
     end
   end
 
   def withdrawn(params) do
-    with %{valid?: true} = changeset <- validate_inputs(params, Withdrawn),
-         {:ok, struct} <- update_balance(changeset.changes) do
+    with {:ok, struct} <- validate_inputs(params, Withdrawn),
+         {:ok, struct} <- update_balance(struct) do
       {:ok, struct}
     else
-      %{valid?: false} = changeset ->
-        {:error, changeset}
-
       {:error, error} ->
         {:error, error}
     end
   end
 
   def fetch(account_id) do
-    IO.inspect("Fetch account by id: #{inspect(account_id)}")
-
     query = from(a in Account, where: a.id == ^account_id, select: a.balance)
-    balance = Repo.all(query)
+    balance = Repo.one(query)
 
     case balance do
       nil ->
         {:error, :not_found}
-      [] ->
-        {:error, :not_found}
-      [value | _] ->
+
+      value ->
         money = Money.new(value, :USD)
         {:ok, Money.to_string(money)}
     end

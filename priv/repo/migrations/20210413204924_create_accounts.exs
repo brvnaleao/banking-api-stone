@@ -10,9 +10,6 @@ defmodule BankingApi.Repo.Migrations.CreateAccounts do
       timestamps()
     end
 
-    create constraint(:accounts, "balance_must_be_positive",
-             check: "balance > 0",
-             comment: "Balance must be a positive number"
-           )
+    create constraint(:accounts, "balance_must_be_positive",check: "balance > 0", comment: "Balance must be a positive number")
   end
 end

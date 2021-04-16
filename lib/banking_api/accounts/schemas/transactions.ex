@@ -14,7 +14,7 @@ defmodule BankingApi.Accounts.Schemas.Transaction do
     field :external, :boolean, default: false
     belongs_to :account, Account
 
-    timestamps()
+    timestamps(updated_at: false)
   end
 
   def changeset(model \\ %__MODULE__{}, params) do
