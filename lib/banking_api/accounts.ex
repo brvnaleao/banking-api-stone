@@ -1,8 +1,12 @@
 defmodule BankingApi.Accounts do
-  alias BankingApi.Accounts.Schemas.Account
-  alias BankingApi.Accounts.Schemas.Transaction
+  @moduledoc """
+  Account's business logic
+  """
+
   alias BankingApi.Accounts.Inputs.Transfer
   alias BankingApi.Accounts.Inputs.Withdrawn
+  alias BankingApi.Accounts.Schemas.Account
+  alias BankingApi.Accounts.Schemas.Transaction
 
   alias BankingApi.Repo
 
@@ -14,7 +18,7 @@ defmodule BankingApi.Accounts do
 
       account = Repo.one(query)
 
-      if(account !== nil) do
+      if account !== nil do
         withdrawn = arguments.withdrawn
         new_value = account.balance - withdrawn
 
@@ -72,10 +76,7 @@ defmodule BankingApi.Accounts do
       origin_account = Repo.one(first_query)
       destiny_account = Repo.one(second_query)
 
-      if(
-        origin_account == nil or
-          destiny_account == nil
-      ) do
+      if origin_account == nil or destiny_account == nil do
         Repo.rollback(:invalid_accounts)
       else
         value = changeset.value

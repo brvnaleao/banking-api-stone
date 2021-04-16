@@ -1,6 +1,6 @@
 defmodule BankingApi.Accounts.Inputs.Withdrawn do
   @moduledoc """
-  Input data for calling insert_new_author/1.
+  Input validation for withdraw
   """
   use Ecto.Schema
 

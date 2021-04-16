@@ -1,4 +1,7 @@
 defmodule BankingApi.Accounts.Schemas.Transaction do
+  @moduledoc """
+  Tansaction's Schema Module
+  """
   use Ecto.Schema
   import Ecto.Changeset
   alias BankingApi.Accounts.Schemas.Account

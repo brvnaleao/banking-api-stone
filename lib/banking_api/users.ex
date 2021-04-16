@@ -1,7 +1,10 @@
 defmodule BankingApi.Users do
-  alias BankingApi.Users.Schemas.User
+  @moduledoc """
+  User's business logic
+  """
   alias BankingApi.Accounts.Schemas.Account
   alias BankingApi.Accounts.Schemas.Transaction
+  alias BankingApi.Users.Schemas.User
 
   alias BankingApi.Repo
 
