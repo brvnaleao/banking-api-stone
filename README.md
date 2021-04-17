@@ -5,6 +5,22 @@
 
 > This project is part of the Stone Banking API challenge
 
+
+### Table of Contents
+
+1. [Running Project](#Running Project)
+2. [Endpoints](#Endpoints)
+	* [Create User and Account](#1. Create User and Account)
+	* [Withdrawal](#2. Withdrawal)
+	* [Transfer funds between accounts](#3. Transfer funds between accounts)
+	* [Retrive account balance](#4. Retrive account balance)
+3. [Model](#Model)
+	* [Users](#Users)
+	* [Accounts](#Accounts)
+	* [Transactions](#Transactions)
+
+## Running Project
+
 To run the project you need first to have a Postgres container running on port 5432.
 
 ``` sh
@@ -13,7 +29,7 @@ docker-compose up -d
 ```
 
 
-To config the database: 
+To configure the database and download the dependencies: 
 
 ``` sh
 # On the root folder
@@ -27,13 +43,12 @@ To run tests:
 mix test
 ```
 
-To run the application:
+To serve the application:
 
 ``` sh
 # On the root folder. By default it runs at `4000` port.
 mix phx.server
 ```
-
 
 
 ## Endpoints
@@ -284,7 +299,7 @@ Recovers current account balance
 ### Tables
 
 
-**Users**
+##### Users
 
 Column | Type | Mandatory 
 ------------- | -------------|-------------
@@ -297,7 +312,7 @@ updated_at  | timestamp | X
 
 
 
-**Account**
+##### Accounts
 
 Column | Type | Mandatory 
 ------------- | -------------|-------------
@@ -308,7 +323,7 @@ inserted_at  | timestamp | X
 updated_at  | timestamp | X
 
 
-**Transactions**
+##### Transactions
 
 Column | Type | Mandatory 
 ------------- | -------------|-------------
