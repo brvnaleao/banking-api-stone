@@ -10,6 +10,8 @@
 
 - [Banking Api](#banking-api)
   * [Description](#description)
+    + [Table of Contents](#table-of-contents)
+  * [Running Project](#running-project)
   * [Endpoints](#endpoints)
     + [1. Create User and Account](#1-create-user-and-account)
       - [Success Response](#success-response)
