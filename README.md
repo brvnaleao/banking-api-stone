@@ -8,16 +8,24 @@
 
 ### Table of Contents
 
-1. [Running Project](#Running Project)
-2. [Endpoints](#Endpoints)
-	* [Create User and Account](#1. Create User and Account)
-	* [Withdrawal](#2. Withdrawal)
-	* [Transfer funds between accounts](#3. Transfer funds between accounts)
-	* [Retrive account balance](#4. Retrive account balance)
-3. [Model](#Model)
-	* [Users](#Users)
-	* [Accounts](#Accounts)
-	* [Transactions](#Transactions)
+- [Banking Api](#banking-api)
+  * [Description](#description)
+  * [Endpoints](#endpoints)
+    + [1. Create User and Account](#1-create-user-and-account)
+      - [Success Response](#success-response)
+      - [Error Responses](#error-responses)
+    + [2. Withdrawal](#2-withdrawal)
+      - [Success Response](#success-response-1)
+      - [Error Responses](#error-responses-1)
+    + [3. Transfer funds between accounts](#3-transfer-funds-between-accounts)
+      - [Success Response](#success-response-2)
+      - [Error Responses](#error-responses-2)
+    + [4. Retrive account balance](#4-retrive-account-balance)
+      - [Success Response](#success-response-3)
+      - [Error Responses](#error-responses-3)
+  * [Model](#model)
+    + [Tables](#tables)
+
 
 ## Running Project
 
