@@ -31,6 +31,7 @@
 
 ## Running Project
 
+
 To run the project you need first to have a Postgres container running on port 5432.
 
 ``` sh
