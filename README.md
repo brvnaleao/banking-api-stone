@@ -287,7 +287,7 @@ Recovers current account balance
 **Users**
 
 Column | Type | Mandatory 
-------------- | -------------
+------------- | -------------|-------------
 id  | uuid | X
 email  | string | X
 name| string | X
@@ -300,7 +300,7 @@ updated_at  | timestamp | X
 **Account**
 
 Column | Type | Mandatory 
-------------- | -------------
+------------- | -------------|-------------
 id  | uuid | X
 balance  | integer | X
 user_id| uuid | X
@@ -311,7 +311,7 @@ updated_at  | timestamp | X
 **Transactions**
 
 Column | Type | Mandatory 
-------------- | -------------
+------------- | -------------|-------------
 id  | uuid | X
 external  | boolean | X
 value | integer | X
