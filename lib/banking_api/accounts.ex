@@ -14,6 +14,7 @@ defmodule BankingApi.Accounts do
 
   defp update_balance(arguments) do
     Repo.transaction(fn ->
+
       query = from(a in Account, where: a.id == ^arguments.id, lock: "FOR UPDATE")
 
       with %Account{} = account <- Repo.one(query),
@@ -23,7 +24,6 @@ defmodule BankingApi.Accounts do
       else
         nil ->
           Repo.rollback(:invalid_account)
-
         {:error, reason} ->
           Repo.rollback(reason)
       end
@@ -69,12 +69,11 @@ defmodule BankingApi.Accounts do
   end
 
   defp create_transfer(params) do
-    IO.puts("test")
+
     Repo.transaction(fn ->
+
       query = from(a in Account, where: a.id == ^params.origin, lock: "FOR UPDATE")
-
       second_query = from(a in Account, where: a.id == ^params.destiny, lock: "FOR UPDATE")
-
       value = params.value
 
       with %Account{} = origin_account <- Repo.one(query),
@@ -90,7 +89,6 @@ defmodule BankingApi.Accounts do
       else
         nil ->
           Repo.rollback(:invalid_account)
-
         {:error, reason} ->
           Repo.rollback(reason)
       end
@@ -123,7 +121,6 @@ defmodule BankingApi.Accounts do
     |> case do
       nil ->
         {:error, :not_found}
-
       value ->
         value_string = value |> Money.new(:USD) |> Money.to_string()
         {:ok, value_string}
