@@ -52,7 +52,7 @@ defmodule BankingApiWeb.AccountController do
           description: "Your balance cannot be negative"
         })
 
-      {:error, :invalid_accounts} ->
+      {:error, :invalid_account} ->
         send_json(conn, 404, %{type: "not_found", description: "Account not found"})
 
       {:error, :wrong_input} ->

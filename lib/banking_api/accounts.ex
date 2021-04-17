@@ -64,32 +64,35 @@ defmodule BankingApi.Accounts do
     end
   end
 
-  defp create_transfer(changeset) do
+  defp generate_UUID do
+    {:uuid, Ecto.UUID.generate()}
+  end
+
+  defp create_transfer(params) do
+    IO.puts("test")
     Repo.transaction(fn ->
-      first_query = from(a in Account, where: a.id == ^changeset.origin, lock: "FOR UPDATE")
-      second_query = from(a in Account, where: a.id == ^changeset.destiny, lock: "FOR UPDATE")
+      query = from(a in Account, where: a.id == ^params.origin, lock: "FOR UPDATE")
 
-      origin_account = Repo.one(first_query)
-      destiny_account = Repo.one(second_query)
+      second_query = from(a in Account, where: a.id == ^params.destiny, lock: "FOR UPDATE")
 
-      if origin_account == nil or destiny_account == nil do
-        Repo.rollback(:invalid_accounts)
+      value = params.value
+
+      with %Account{} = origin_account <- Repo.one(query),
+           %Account{} = destiny_account <- Repo.one(second_query),
+           {:ok, new_value_origin} <- {:ok, origin_account.balance - value},
+           {:ok, new_value_destiny} <- {:ok, destiny_account.balance + value},
+           {:uuid, transaction_id} <- generate_UUID(),
+           {:ok, struct} <- update_values(origin_account, new_value_origin),
+           {:ok, _} <- update_values(destiny_account, new_value_destiny),
+           {:ok, _} <- save_transaction(-value, origin_account.id, false, transaction_id),
+           {:ok, _} <- save_transaction(value, destiny_account.id, false, transaction_id) do
+        struct
       else
-        value = changeset.value
-        transaction_id = Ecto.UUID.generate()
+        nil ->
+          Repo.rollback(:invalid_account)
 
-        new_value_origin = origin_account.balance - value
-        new_value_destiny = destiny_account.balance + value
-
-        with {:ok, struct} <- update_values(origin_account, new_value_origin),
-             {:ok, _} <- update_values(destiny_account, new_value_destiny),
-             {:ok, _} <- save_transaction(-value, origin_account.id, false, transaction_id),
-             {:ok, _} <- save_transaction(value, destiny_account.id, false, transaction_id) do
-          struct
-        else
-          {:error, error} ->
-            Repo.rollback(error)
-        end
+        {:error, reason} ->
+          Repo.rollback(reason)
       end
     end)
   end
