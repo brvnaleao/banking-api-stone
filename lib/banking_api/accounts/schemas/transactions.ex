@@ -1,4 +1,7 @@
 defmodule BankingApi.Accounts.Schemas.Transaction do
+  @moduledoc """
+  Tansaction's Schema Module
+  """
   use Ecto.Schema
   import Ecto.Changeset
   alias BankingApi.Accounts.Schemas.Account
@@ -12,9 +15,10 @@ defmodule BankingApi.Accounts.Schemas.Transaction do
   schema "transactions" do
     field :value, :integer
     field :external, :boolean, default: false
+    field :transaction_id, Ecto.UUID
     belongs_to :account, Account
 
-    timestamps()
+    timestamps(updated_at: false)
   end
 
   def changeset(model \\ %__MODULE__{}, params) do

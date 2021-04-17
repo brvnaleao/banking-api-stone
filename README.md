@@ -1,6 +1,8 @@
 # Banking Api
 
 
+## Description
+
 > This project is part of the Stone Banking API challenge
 
 To run the project you need first to have a Postgres container running on port 5432.
@@ -34,9 +36,9 @@ mix phx.server
 
 
 
-# Endpoints
+## Endpoints
 
-## 1. Create User and Account
+### 1. Create User and Account
 
 Create an User and Account
 
@@ -57,7 +59,7 @@ Create an User and Account
 
 
 
-### Success Response
+#### Success Response
 
 **Condition** : If everything all inputs are valid and there is no duplication.
 
@@ -67,16 +69,18 @@ Create an User and Account
 
 ```json
 {
-  "account_id": "5cd5e558-a8e3-4f5f-9695-758eb5604b0b",
-  "cpf": "65054866882",
-  "email": "example@email.com",
-  "id": "6300eb44-87e4-4674-b3b4-fd322c8479f6",
-  "name": "Name",
-  "balance": "Your actual balance is $1000.00"
+  "description": { 
+    "account_id": "5cd5e558-a8e3-4f5f-9695-758eb5604b0b",
+    "cpf": "65054866882",
+    "email": "example@email.com",
+    "id": "6300eb44-87e4-4674-b3b4-fd322c8479f6",
+    "name": "Name",
+    "balance": "Your actual balance is $1000.00"
+  }
 }
 ```
 
-### Error Responses
+#### Error Responses
 
 **Code** : `400 BAD REQUEST`
 
@@ -84,18 +88,21 @@ Create an User and Account
 
 ```json
 {
-  "email": "has already been taken"
+  "description": {
+    "email": "has already been taken"
+  },
+  "type": "bad_input"
 }
 ```
 
 
 
 
-## 2. Withdrawn
+### 2. Withdrawal
 
 Create an User and Account
 
-**URL** : `/api/account/withdrawn`
+**URL** : `/api/account/withdrawal`
 
 **Method** : `POST`
 
@@ -105,13 +112,13 @@ Create an User and Account
 ```json
 {
 	"id": "[Valid UUID. Ex: 5cd5e558-a8e3-4f5f-9695-758eb5604b0b]",
-	"withdrawn": "[integer value]"
+	"withdrawal": "[integer value]"
 }
 ```
 
 
 
-### Success Response
+#### Success Response
 
 **Condition** : If the account and the the value are valid.
 
@@ -121,11 +128,11 @@ Create an User and Account
 
 ```json
 {
-  "balance": "Your actual balance is $994.32"
+  "description": "Your actual balance is $994.32"
 }
 ```
 
-### Error Responses
+#### Error Responses
 
 **Code** : `400 BAD REQUEST`
 
@@ -133,7 +140,7 @@ Create an User and Account
 
 ```json
 {
-  "withdrawn": "can't be blank"
+  "withdrawal": "can't be blank"
 }
 ```
 
@@ -148,7 +155,7 @@ or
 ```
 
 
-## 3. Transfer funds between accounts
+### 3. Transfer funds between accounts
 
 Create an User and Account
 
@@ -168,7 +175,7 @@ Create an User and Account
 ```
 
 
-### Success Response
+#### Success Response
 
 **Condition** : If the accounts and the value are valid.
 
@@ -178,11 +185,11 @@ Create an User and Account
 
 ```json
 {
-  "balance": "Your actual balance is $994.32"
+  "description": "Your actual balance is $994.32"
 }
 ```
 
-### Error Responses
+#### Error Responses
 
 **Code** : `400 BAD REQUEST`
 
@@ -190,7 +197,10 @@ Create an User and Account
 
 ```json
 {
-  "withdrawn": "can't be blank"
+  "description": {
+    "value": "can't be blank"
+  },
+  "type": "bad_input"
 }
 ```
 
@@ -198,9 +208,11 @@ or
 
 ```json
 {
-  "description": "Invalid Id",
+  "description": {
+    "id": "is invalid"
+  },
   "type": "bad_input"
-}
+}v
 
 ```
 
@@ -214,7 +226,7 @@ or
 }
 ```
 
-## 4. Retrive account balance
+### 4. Retrive account balance
 
 Recovers current account balance
 
@@ -225,7 +237,7 @@ Recovers current account balance
 
         
 
-### Success Response
+#### Success Response
 
 **Condition** : If the account is correct.
 
@@ -235,11 +247,11 @@ Recovers current account balance
 
 ```json
 {
-  "balance": "Your actual balance is $994.32"
+  "description": "Your actual balance is $994.32"
 }
 ```
 
-### Error Responses
+#### Error Responses
 
 **Code** : `400 BAD REQUEST`
 
@@ -262,3 +274,48 @@ Recovers current account balance
   "type": "not_found"
 }
 ```
+
+
+
+## Model
+
+
+
+### Tables
+
+
+**Users**
+
+Column | Type | Mandatory 
+------------- | -------------
+id  | uuid | X
+email  | string | X
+name| string | X
+cpf  | string | X
+inserted_at  | timestamp | X
+updated_at  | timestamp | X
+
+
+
+**Account**
+
+Column | Type | Mandatory 
+------------- | -------------
+id  | uuid | X
+balance  | integer | X
+user_id| uuid | X
+inserted_at  | timestamp | X
+updated_at  | timestamp | X
+
+
+**Transactions**
+
+Column | Type | Mandatory 
+------------- | -------------
+id  | uuid | X
+external  | boolean | X
+value | integer | X
+transaction_id | uuid | 
+account_id  | timestampv | X
+inserted_at  | timestamp | X
+

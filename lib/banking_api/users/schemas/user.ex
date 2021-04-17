@@ -1,4 +1,7 @@
 defmodule BankingApi.Users.Schemas.User do
+  @moduledoc """
+  User's Schema Module
+  """
   use Ecto.Schema
   import Ecto.Changeset
   alias BankingApi.Accounts.Schemas.Account
@@ -23,8 +26,7 @@ defmodule BankingApi.Users.Schemas.User do
     |> cast(params, @required_fields)
     |> validate_required(@required_fields)
     |> validate_length(:name, min: 2)
-    |> validate_length(:cpf, min: 11)
-    |> validate_length(:cpf, max: 11)
+    |> validate_length(:cpf, is: 11)
     |> validate_format(:email, @email_regex)
     |> unique_constraint(:email)
     |> unique_constraint(:cpf)

@@ -1,4 +1,7 @@
 defmodule BankingApiWeb.Telemetry do
+  @moduledoc """
+  Telememetry
+  """
   use Supervisor
   import Telemetry.Metrics
 

@@ -4,12 +4,20 @@ defmodule BankingApiWeb.UserController do
   alias BankingApi.Users
 
   def create(conn, params) when is_map(params) do
-    with {:ok, user} <- Users.create_user_and_account(params) do
-      send_json(conn, user)
-    else
+    case Users.create_user_and_account(params) do
+      {:ok, user} ->
+        send_json(conn, user)
+
       {:error, _, changeset, _} ->
-        set_error(conn, 400, transform_into_map(changeset.errors))
+        set_error(conn, 400, get_error_template(changeset.errors))
     end
+  end
+
+  defp get_error_template(errors) do
+    %{
+      type: "bad_input",
+      description: transform_into_map(errors)
+    }
   end
 
   defp send_json(conn, user) do
