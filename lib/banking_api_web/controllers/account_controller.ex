@@ -1,6 +1,7 @@
 defmodule BankingApiWeb.AccountController do
   use BankingApiWeb, :controller
   alias BankingApi.Accounts
+  alias BankingApi.Notifications.Email
 
   def show(conn, %{"id" => account_id}) do
     with {:uuid, {:ok, _}} <- {:uuid, Ecto.UUID.cast(account_id)},
@@ -18,6 +19,7 @@ defmodule BankingApiWeb.AccountController do
   def withdraw(conn, params) when is_map(params) do
     case Accounts.withdraw(params) do
       {:ok, struct} ->
+        Email.send_email(:withdrawal, struct)
         render_json(conn, struct, "update_balance.json")
 
       {:error, :balance_error} ->
@@ -44,6 +46,7 @@ defmodule BankingApiWeb.AccountController do
   def tranfer_between_accounts(conn, params) when is_map(params) do
     case Accounts.transfer_between_accounts(params) do
       {:ok, struct} ->
+        Email.send_email(:transfer, struct)
         render_json(conn, struct, "transfer_balance.json")
 
       {:error, :balance_error} ->
